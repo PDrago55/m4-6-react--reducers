@@ -1,8 +1,13 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from "react";
+import ReactDOM from "react-dom";
+import { SeatProvider } from "./components/SeatContext";
+import App from "./components/App";
 
-import App from './components/App';
-
-const rootElement = document.getElementById('root');
-
-ReactDOM.render(<App />, rootElement);
+const rootElement = document.getElementById("root");
+///wrapped seatprovider context throughout our app
+ReactDOM.render(
+  <SeatProvider>
+    <App />
+  </SeatProvider>,
+  rootElement
+);
