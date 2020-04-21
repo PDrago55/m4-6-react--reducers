@@ -5,7 +5,7 @@
  * @example range(6) -> [0, 1, 2, 3, 4, 5]
  */
 export function range(end) {
-  var ans = [];
+  let ans = [];
   for (let i = 0; i < end; i++) {
     ans.push(i);
   }

@@ -1,12 +1,12 @@
-import React from 'react';
-import styled from 'styled-components';
-import { Dialog } from '@reach/dialog';
-import VisuallyHidden from '@reach/visually-hidden';
-import { Icon } from 'react-icons-kit';
-import { x as xIcon } from 'react-icons-kit/feather/x';
+import React from "react";
+import styled from "styled-components";
+import { Dialog } from "@reach/dialog";
+import VisuallyHidden from "@reach/visually-hidden";
+import { Icon } from "react-icons-kit";
+import { x as xIcon } from "react-icons-kit/feather/x";
 
-import '@reach/dialog/styles.css';
-import UnstyledButton from './UnstyledButton';
+import "@reach/dialog/styles.css";
+import UnstyledButton from "./UnstyledButton";
 
 const Modal = ({ isOpen, onClose, children, ...delegated }) => {
   return (
