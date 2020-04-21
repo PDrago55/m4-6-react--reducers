@@ -10,73 +10,117 @@ import { SeatContext } from "./SeatContext";
 import { BookingContext } from "./BookingContext";
 import { decodeSeatId } from "../helpers";
 const PurchaseModel = () => {
-  const [open, setOpen] = useState(false);
-
   const {
     selectedSeatId,
     status,
     error,
     price,
-    actions: { bookingProcess }
+    actions: {
+      beginBookingProcess,
+      cancelBookingProcess,
+      purchaseTicketRequest,
+      purchaseTicketSuccess,
+      purchaseTicketFailure
+    }
   } = useContext(BookingContext);
-  console.log(
-    "STATUS:",
-    status,
-    "PRICE",
-    price,
-    "SelectedSEAT",
-    selectedSeatId
-  );
   const {
-    actions: { markedSeatAsPurchased }
+    actions: { markSeatPurchased }
   } = useContext(SeatContext);
-
-  const handleOpenClick = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
 
   const [creditCard, setCreditCard] = useState("");
   const [expiration, setExpiration] = useState("");
   const { rowName, seatNum } = decodeSeatId(selectedSeatId);
-
   return (
     <div>
-      <Button variant="outlined" color="primary" onClick={handleOpenClick}>
+      <Button variant="outlined" color="primary" onClick={beginBookingProcess}>
         CLICK ME!
       </Button>
       <Dialog
         open={selectedSeatId !== null}
-        onClose={handleClose}
+        onClick={cancelBookingProcess}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle> PURCHASE TICKET {seatNum} </DialogTitle>
+        <DialogTitle>
+          {" "}
+          PURCHASE TICKET {rowName}
+          {seatNum}{" "}
+        </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            You have purchase this seat{seatNum} for ${price}
+            You have purchase this seat{" "}
+            <strong>
+              {rowName}
+              {seatNum}{" "}
+            </strong>
+            for ${price}
           </DialogContentText>
+          <DialogContent>
+            Place your credit card information below, we won't steal it or scam
+            you, promise!
+          </DialogContent>
         </DialogContent>
         <DialogActions>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            label="Credit Card"
-            type="credit card"
-            fullWidth
-          ></TextField>
-          <TextField
-            margin="dense"
-            id="name"
-            label="Expiration"
-            type="Expiration"
-            fullWidth
-          ></TextField>
-          <Button>Pay</Button>
+          <form>
+            <TextField
+              autoFocus
+              variant="outlined"
+              margin="dense"
+              id="credit"
+              label="Credit Card"
+              type="text"
+              value={creditCard}
+              onChange={ev => setCreditCard(ev.currentTarget.value)}
+              style={{ flex: 2 }}
+            />
+            <TextField
+              margin="dense"
+              id="expire"
+              label="Expiration"
+              type="text"
+              value={expiration}
+              onChange={ev => setExpiration(ev.currentTarget.value)}
+              style={{ flex: 1 }}
+            />
+            <Button
+              type="submit"
+              form="myform"
+              onClick={ev => {
+                console.log(ev);
+                ev.preventDefault();
+
+                purchaseTicketRequest();
+
+                fetch("/api/book-seat", {
+                  method: "POST",
+                  headers: {
+                    "content-type": "application/json"
+                  },
+                  body: JSON.stringify({
+                    creditCard,
+                    expiration,
+                    seatId: selectedSeatId
+                  })
+                })
+                  .then(res => res.json())
+                  .then(json => {
+                    if (json.success) {
+                      console.log("HERE!", json);
+                      purchaseTicketSuccess();
+                      markSeatPurchased(selectedSeatId);
+                    } else {
+                      purchaseTicketFailure(json.message);
+                    }
+                  })
+                  .catch(err => {
+                    console.error(err);
+                    purchaseTicketFailure(error);
+                  });
+              }}
+            >
+              Pay
+            </Button>
+          </form>
         </DialogActions>
       </Dialog>
     </div>

@@ -28,6 +28,7 @@ const TicketWidget = () => {
                 <SeatWrapper key={seatId}>
                   {
                     <Seat
+                      rowIndex={rowIndex}
                       rowName={rowName}
                       seatIndex={seatIndex + 1}
                       seatStatus={seat.isBooked}
